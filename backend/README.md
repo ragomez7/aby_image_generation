@@ -30,6 +30,7 @@ Create a `.env` file in the `backend/` directory with the following:
 ## Environment Variables
 
 Create a `.env` file in the backend directory with:
+
 ```env
 # Replicate API Token (required)
 REPLICATE_API_TOKEN = {your_api_key}
@@ -37,3 +38,6 @@ REPLICATE_API_TOKEN = {your_api_key}
 # Database Password (required)
 POSTGRES_PASSWORD = "Postgres12!"
 ```
+
+Run the backend server with
+`uvicorn main:app --reload --port 8000`
