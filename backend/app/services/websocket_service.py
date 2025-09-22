@@ -125,15 +125,6 @@ class WebSocketManager:
             data_removed = prediction_data.get("data_removed", False)
             urls = []
             
-            # if output:
-            #     if isinstance(output, list):
-            #         urls = output
-            #     elif isinstance(output, str):
-            #         urls = [output]
-            #     else:
-            #         logger.info(f"Unexpected output format for {prediction_id}: {type(output)} - {output}")
-            #         urls = [str(output)] if output else []
-            
             # Build response with additional info
             result = {
                 "prediction_id": prediction_id,
@@ -165,46 +156,6 @@ class WebSocketManager:
                 "status": "error",
                 "urls": [],
                 "error": str(e)
-            }
-    
-    async def _get_predictions_for_job(self, job_id: str) -> dict:
-        """Get predictions for a job with current Replicate status."""
-        try:
-            # Get prediction IDs from database
-            prediction_ids = await self._get_prediction_ids_from_db(job_id)
-            
-            # Fetch current status from Replicate for each prediction (concurrently)
-            prediction_tasks = [
-                self._get_prediction_from_replicate(prediction_id) 
-                for prediction_id in prediction_ids
-            ]
-            predictions = await asyncio.gather(*prediction_tasks, return_exceptions=True)
-            
-            # Handle any exceptions in the results
-            processed_predictions = []
-            for i, result in enumerate(predictions):
-                if isinstance(result, Exception):
-                    logger.error(f"Error fetching prediction {prediction_ids[i]}: {result}")
-                    processed_predictions.append({
-                        "prediction_id": prediction_ids[i],
-                        "status": "error",
-                        "urls": [],
-                        "error": str(result)
-                    })
-                else:
-                    processed_predictions.append(result)
-            return {
-                "job_id": job_id,
-                "predictions": processed_predictions,
-                "timestamp": asyncio.get_event_loop().time()
-            }
-        except Exception as e:
-            logger.error(f"Failed to get predictions for {job_id}: {e}")
-            return {
-                "error": str(e),
-                "job_id": job_id,
-                "predictions": [],
-                "timestamp": asyncio.get_event_loop().time()
             }
     
     async def _send_concurrent_prediction_updates(self, job_id: str, prediction_ids: list):

@@ -13,7 +13,3 @@ api_router.include_router(generation.router, tags=["generation"])
 
 # Include WebSocket routes
 api_router.include_router(websocket.router, tags=["websocket"])
-
-# Add other routers here as needed
-# api_router.include_router(users.router, prefix="/users", tags=["users"])
-# api_router.include_router(items.router, prefix="/items", tags=["items"])
